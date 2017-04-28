@@ -1,0 +1,77 @@
+{
+  "name": "jiken",
+  "version": "0.1.0",
+  "description": "Browser EventEmitter",
+  "main": "dist/jiken.cjs.js",
+  "module": "dist/jiken.es.js",
+  "jsnext:main": "dist/jiken.es.js",
+  "repository": "https://github.com/DoumanAsh/jiken",
+  "bugs": {
+    "url": "https://github.com/DoumanAsh/jiken/issues"
+  },
+  "files": [
+      "docs/",
+      "dist/"
+  ],
+  "scripts": {
+    "lint": "eslint src/ test/",
+
+    "build": "rollup -c",
+    "build:min": "rollup -c rollup.config.min.js",
+    "build:watch": "rollup -c -w",
+    "prepublishOnly": "npm run build",
+
+    "test": "ava",
+    "coverage": "node ./node_modules/nyc/bin/nyc.js node  ./node_modules/ava/cli.js",
+
+    "docs": "jsdoc -c jsdoc.json",
+    "docs:md": "node ./ci/gen_md_docs.js"
+  },
+  "keywords": [
+    "event",
+    "EventEmitter"
+  ],
+  "author": "Douman <douman@gmx.se>",
+  "license": "MIT",
+  "devDependencies": {
+    "jsdoc": "*",
+    "jsdoc-to-markdown": "*",
+    "minami": "*",
+
+    "ava": "*",
+    "babel-register": "*",
+    "nyc": "*",
+
+    "eslint": "*",
+
+    "rollup": "*",
+    "rollup-plugin-uglify": "*",
+    "rollup-plugin-re": "*",
+    "rollup-watch": "*",
+    "rollup-plugin-eslint": "*",
+    "rollup-plugin-babel": "*",
+    "babel-preset-es2015": "*",
+    "babel-plugin-external-helpers": "*",
+    "babel-plugin-transform-object-rest-spread": "*"
+  },
+  "ava": {
+      "files": [
+          "test/**/*.js"
+      ],
+      "source": [
+          "src/**/*.js"
+      ],
+      "failFast": true
+  },
+  "nyc": {
+      "all": true,
+      "include": [
+          "src/**/*.js"
+      ],
+      "reporter": [
+          "html",
+          "text",
+          "lcov"
+      ]
+  }
+}

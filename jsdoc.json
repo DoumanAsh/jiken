@@ -1,0 +1,27 @@
+{
+    "source": {
+        "include": [
+            "src"
+        ]
+    },
+    "plugins": ["plugins/markdown"],
+    "markdown": {
+    },
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": true,
+        "useLongnameInNav": false,
+        "showInheritedInNav": true,
+        "default": {
+            "includeDate": false
+        }
+    },
+    "opts": {
+        "destination": "./html/",
+        "encoding": "utf8",
+        "private": false,
+        "recurse": true,
+        "readme": "README.md",
+        "template": "./node_modules/minami"
+    }
+}
