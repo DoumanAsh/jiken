@@ -55,7 +55,24 @@
 <h2>Documentation</h2><ul>
 <li><a href="https://doumanash.github.io/jiken">API</a></li>
 </ul>
-<h2>Overview</h2><p>This package's goal is to emulate node.js EventEmitter.</p></article>
+<h2>Overview</h2><p>This package's goal is to emulate node.js EventEmitter.</p>
+<h3>Install</h3><h4>npm</h4><pre class="prettyprint source"><code>npm install jiken</code></pre><h4>Browser</h4><p>Alternatevly you can grab built copy from repository:</p>
+<pre class="prettyprint source"><code>&lt;script src=&quot;https://raw.githubusercontent.com/DoumanAsh/jiken/master/dist/jiken.min.js&quot;></code></pre><h3>Usage</h3><h4>Extend Class</h4><pre class="prettyprint source lang-js"><code>const Jiken = require('jiken').Jiken;
+
+class MySuperEmitter extends Jiken {
+    constructor() {
+        super()
+        this.on('some-event', () => console.log('trigger some-event'));
+    }
+}
+
+const emitter = new MySuperEmitter();
+emitter.emit('some-event');</code></pre><h4>Directly Create Instance</h4><pre class="prettyprint source lang-js"><code>const Jiken = require('jiken').Jiken;
+
+const test = new Jiken();
+
+test.on('lolka', () => console.log('lol'));
+test.emit('lolka');</code></pre></article>
     </section>
 
 
