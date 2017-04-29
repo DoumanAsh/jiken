@@ -53,7 +53,7 @@ test('Jiken add events', async t => {
     t.is(jiken.listenerCount(event.name), 3);
     t.deepEqual(jiken._events[event.name][2], {once: true, inner: event.listener});
     t.deepEqual(jiken.eventNames(), [event.name, event2.name]);
-    t.deepEqual(jiken.listeners(event.name), [event.listener, event2.listener, {once:true, inner:event.listener}]);
+    t.deepEqual(jiken.listeners(event.name), [event.listener, event2.listener, event.listener]);
 
     jiken.prependListener(event.name, event2.listener);
     t.true(event.name in jiken._events);
@@ -61,7 +61,7 @@ test('Jiken add events', async t => {
     t.is(jiken.listenerCount(event.name), 4);
     t.deepEqual(jiken._events[event.name][0], event2.listener);
     t.deepEqual(jiken.eventNames(), [event.name, event2.name]);
-    t.deepEqual(jiken.listeners(event.name), [event2.listener, event.listener, event2.listener, {once:true, inner:event.listener}]);
+    t.deepEqual(jiken.listeners(event.name), [event2.listener, event.listener, event2.listener, event.listener]);
 
     jiken.prependOnceListener(event.name, event.listener);
     t.true(event.name in jiken._events);
@@ -69,7 +69,7 @@ test('Jiken add events', async t => {
     t.is(jiken.listenerCount(event.name), 5);
     t.deepEqual(jiken._events[event.name][0], {once:true, inner:event.listener});
     t.deepEqual(jiken.eventNames(), [event.name, event2.name]);
-    t.deepEqual(jiken.listeners(event.name), [{once:true, inner:event.listener}, event2.listener, event.listener, event2.listener, {once:true, inner:event.listener}]);
+    t.deepEqual(jiken.listeners(event.name), [event.listener, event2.listener, event.listener, event2.listener, event.listener]);
 
 
     ///Try to work with bad listeners
@@ -91,7 +91,7 @@ test('Jiken add events', async t => {
     t.true(event.name in jiken._events);
     t.is(jiken._events[event.name].length, 2);
     t.is(jiken.listenerCount(event.name), 2);
-    t.deepEqual(jiken.listeners(event.name), [event2.listener, {once:true, inner:event.listener}]);
+    t.deepEqual(jiken.listeners(event.name), [event2.listener, event.listener]);
 
     jiken.removeListener(event.name, event.listener);
     t.true(event.name in jiken._events);
@@ -317,4 +317,51 @@ test.cb('Jiken trigger event once sync', t => {
     t.deepEqual(jiken.eventNames(), []);
     t.is(jiken.listenerCount(event.name), 0);
     t.false(jiken.emit(event.name, args[0], args[1], args[2]));
+});
+
+test.cb('Jiken trigger 2 events once sync', t => {
+    const jiken = new Jiken();
+    const args = [1, 2, 3];
+    const event = {
+        name: "waifu",
+        listener: function(arg1, arg2) {
+            t.is(arg1, args[0]);
+            t.is(arg2, args[1]);
+        }
+    };
+    const event2 = {
+        name: event.name,
+        listener: function(arg1, arg2) {
+            t.is(arg1, args[0]);
+            t.is(arg2, args[1]);
+            t.pass();
+            t.end();
+        }
+    };
+
+    jiken.once(event.name, event.listener);
+    jiken.on(event2.name, event2.listener);
+
+    jiken.trigger(event.name, args[0], args[1], args[2]);
+    t.true(event.name in jiken._events);
+    t.true(event2.name in jiken._events);
+    t.is(jiken.listenerCount(event.name), 1);
+    t.is(jiken.listenerCount(event2.name), 1);
+    t.deepEqual(jiken.eventNames(), [event2.name]);
+
+    jiken.removeListener(event2.name, event2.listener);
+    t.false(event.name in jiken._events);
+    t.false(event2.name in jiken._events);
+    t.is(jiken.listenerCount(event2.name), 0);
+    t.deepEqual(jiken.eventNames(), []);
+
+    jiken.once(event.name, event.listener);
+    t.true(event.name in jiken._events);
+    t.is(jiken.listenerCount(event.name), 1);
+    t.deepEqual(jiken.eventNames(), [event.name]);
+
+    t.true(jiken.emit(event.name, args[0], args[1], args[2]));
+    t.false(event.name in jiken._events);
+    t.is(jiken.listenerCount(event.name), 0);
+    t.deepEqual(jiken.eventNames(), []);
 });

@@ -109,7 +109,8 @@ class Jiken {
     emit(name, ...args) {
         const event = this._events[name];
 
-        if (!event || event.length === 0) return false;
+        //We should delete even completely once all listeners are removed.
+        if (!event) return false;
 
         for (let idx = 0; idx < event.length; idx += 1) {
             let listener = event[idx];
@@ -117,12 +118,15 @@ class Jiken {
                 listener = listener.inner;
                 event.splice(idx, 1);
                 idx -= 1;
+
+                this._invoke_listener(listener, args);
+                if (event.length === 0) {
+                    delete this._events[name];
+                    break;
+                }
             }
-
-            this._invoke_listener(listener, args);
+            else this._invoke_listener(listener, args);
         }
-
-        if (event.length === 0) delete this._events[name];
 
         return true;
     }
@@ -169,7 +173,14 @@ class Jiken {
      * @returns {Array} Listeners.
      */
     listeners(name) {
-        return this._events[name] || [];
+        const event = this._events[name];
+
+        if (event) {
+            return event.map((listener) => listener.once ? listener.inner : listener);
+        }
+        else {
+            return [];
+        }
     }
 
     /**
@@ -285,6 +296,7 @@ class Jiken {
                 const event_listener = event[idx];
                 if ((event_listener.once && event_listener.inner === listener) || event_listener === listener) {
                     event.splice(idx, 1);
+                    if (event.length === 0) delete this._events[name];
                     return this;
                 }
             }

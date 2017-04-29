@@ -1,6 +1,6 @@
 {
   "name": "jiken",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Browser EventEmitter",
   "main": "dist/jiken.cjs.js",
   "module": "dist/jiken.es.js",
@@ -16,10 +16,10 @@
   "scripts": {
     "lint": "eslint src/ test/",
 
-    "build:es": "rollup -c rollup.config.es.js",
+    "build:node": "rollup -c rollup.config.node.js",
     "build:min": "rollup -c rollup.config.min.js",
 
-    "prebuild": "npm run build:es",
+    "prebuild": "npm run build:node",
     "build": "rollup -c",
 
     "prebuild:all": "npm run build:min",

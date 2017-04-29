@@ -63,6 +63,17 @@ var Jiken = function () {
 
         this._events = {};
 
+        /**
+         * Alias to [on]{@link Jiken#on}.
+         *
+         * @memberof Jiken#
+         * @method addListener
+         *
+         * @param {Any} name Event name.
+         * @param {Function} listener Event listener to invoke.
+         *
+         * @returns {this} Itself for chain.
+         */
         this.addListener = this.on;
         this.sync();
     }
@@ -149,7 +160,8 @@ var Jiken = function () {
         value: function emit(name) {
             var event = this._events[name];
 
-            if (!event || event.length === 0) return false;
+            //We should delete even completely once all listeners are removed.
+            if (!event) return false;
 
             for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
                 args[_key - 1] = arguments[_key];
@@ -161,12 +173,14 @@ var Jiken = function () {
                     listener = listener.inner;
                     event.splice(idx, 1);
                     idx -= 1;
-                }
 
-                this._invoke_listener(listener, args);
+                    this._invoke_listener(listener, args);
+                    if (event.length === 0) {
+                        delete this._events[name];
+                        break;
+                    }
+                } else this._invoke_listener(listener, args);
             }
-
-            if (event.length === 0) delete this._events[name];
 
             return true;
         }
@@ -229,7 +243,15 @@ var Jiken = function () {
     }, {
         key: "listeners",
         value: function listeners(name) {
-            return this._events[name] || [];
+            var event = this._events[name];
+
+            if (event) {
+                return event.map(function (listener) {
+                    return listener.once ? listener.inner : listener;
+                });
+            } else {
+                return [];
+            }
         }
 
         /**
@@ -363,6 +385,7 @@ var Jiken = function () {
                     var event_listener = event[idx];
                     if (event_listener.once && event_listener.inner === listener || event_listener === listener) {
                         event.splice(idx, 1);
+                        if (event.length === 0) delete this._events[name];
                         return this;
                     }
                 }
