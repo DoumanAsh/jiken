@@ -3,3 +3,4 @@ public/
 coverage/
 .nyc_output/
 html/
+dist/

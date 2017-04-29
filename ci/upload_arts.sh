@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## Save dist/
+cp -rf dist/ ~/
+
+## Upload coverage
 sh "$(dirname "$0")/coverage.sh"
 
 ## Configure Travis
@@ -9,22 +13,12 @@ git config --global user.name "Travis CI"
 git config --global user.email "$COMMIT_AUTHOR_EMAIL"
 echo "https://${GIT_TOKEN}:x-oauth-basic@github.com\n" > ~/.git-credentials
 
-## Upload build artifacts
-REPO=`git config remote.origin.url`
-SHA=`git log -1 --format="%s(%h %cd)" --date=short`
-
-git status
-
-git checkout master
-git config remote.origin.url "https://${GIT_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git"
-git add --all .
-git commit -m "Upload Artifacts [ci skip]" -m "Commit: ${SHA}"
-git push origin HEAD
-
-## Upload build artifacts
-git clone $REPO html/
-
+## Upload HTML docs
+rm -rf html/
+mkdir html/
 cd html/
+
+git clone $REPO .
 
 git checkout gh-pages || git checkout --orphan gh-pages
 
