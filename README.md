@@ -34,7 +34,7 @@ npm install --save jiken
 
 Alternatevly you can grab built copy from repository:
 ```
-<script src="https://raw.githubusercontent.com/DoumanAsh/jiken/master/dist/jiken.min.js">
+<script src="https://github.com/DoumanAsh/jiken/releases/download/0.2.2/jiken.min.js">
 ```
 
 ### Usage
