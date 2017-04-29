@@ -3,7 +3,8 @@
 # Jiken
 Browser EventEmitter
 
-Mimics API of node.js [EventEmitter](https://nodejs.org/api/events.html)
+Mimics API of node.js [EventEmitter](https://nodejs.org/api/events.html).
+
 And gives you some extra features.
 
 ## Usage
