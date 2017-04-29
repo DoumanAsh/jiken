@@ -1,6 +1,6 @@
 {
   "name": "jiken",
-  "version": "0.2.1",
+  "version": "0.2.3",
   "description": "Browser EventEmitter",
   "main": "dist/jiken.cjs.js",
   "module": "dist/jiken.es.js",
