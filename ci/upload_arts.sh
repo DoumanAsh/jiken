@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sh ./coverage.sh
+sh "$(dirname "$0")/coverage.sh"
 
 ## Configure Travis
 COMMIT_AUTHOR_EMAIL=`git --no-pager log -1 --pretty=format:"%ae" HEAD`
