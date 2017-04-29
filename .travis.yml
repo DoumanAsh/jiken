@@ -10,10 +10,9 @@ before_script:
 script:
     - npm run lint
     - npm run build:all
+    - npm run docs:md
     - npm test
 
 after_success:
-    - npm run coverage
-    - cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
-    - sh -x ./ci/update_pages.sh
+    - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then sh ./ci/upload_arts.sh; fi
 
