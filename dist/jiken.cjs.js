@@ -5,7 +5,8 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /**
  * Browser EventEmitter
  *
- * Mimics API of node.js [EventEmitter]{@link https://nodejs.org/api/events.html}
+ * Mimics API of node.js [EventEmitter]{@link https://nodejs.org/api/events.html}.
+ *
  * And gives you some extra features.
  *
  * ## Usage
