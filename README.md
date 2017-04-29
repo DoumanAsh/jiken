@@ -12,14 +12,22 @@ Simple EventEmitter for Browser.
 
 ## Overview
 
-This package's goal is to emulate node.js EventEmitter.
+This package's goal is to emulate node.js [EventEmitter](https://nodejs.org/api/events.html).
+
+But adds some cool flavour on top of it.
+
+### Async mode
+
+Contrary to node.js EventEmitter, Jiken gives you [possibility](https://github.com/DoumanAsh/jiken/blob/master/docs/API.md#Jiken+not_sync) to run listeners asynchronously.
+
+Under hood it uses [setTimeout](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout)
 
 ### Install
 
 #### npm
 
 ```
-npm install jiken
+npm install --save jiken
 ```
 
 #### Browser

@@ -22,6 +22,34 @@ var createClass = function () {
 
 /**
  * Browser EventEmitter
+ *
+ * Mimics API of node.js [EventEmitter]{@link https://nodejs.org/api/events.html}
+ * And gives you some extra features.
+ *
+ * ## Usage
+ *
+ * ### Extend class:
+ * ```
+   const Jiken = require('jiken').Jiken;
+   class MySuperEmitter extends Jiken {
+       constructor() {
+           super()
+           this.on('some-event', () => console.log('trigger some-event'));
+       }
+   }
+
+   const emitter = new MySuperEmitter();
+   emitter.emit('some-event');
+ * ```
+ *
+ * ### Use instance:
+ * ```
+   const Jiken = require('jiken').Jiken;
+
+   const test = new Jiken();
+
+   test.on('lolka', () => console.log('lol'));
+ * ```
  */
 
 var Jiken = function () {
@@ -34,17 +62,58 @@ var Jiken = function () {
         this._events = {};
 
         this.addListener = this.on;
+        this.sync();
     }
 
     /**
-     * Validator of listener. Throws if invalid.
-     * @private
-     * @param {Function} listener Event listener to invoke.
-     * @returns {void}
+     * Sets synchronous execution for listeners.
+     * @returns {this} Itself for chain.
      */
 
 
     createClass(Jiken, [{
+        key: "sync",
+        value: function sync() {
+            var _this = this;
+
+            this._invoke_listener = function (listener, args) {
+                return listener.apply(_this, args);
+            };
+            return this;
+        }
+
+        /**
+         * Sets asynchronous execution for listeners.
+         *
+         * Under hood it uses [setTimeout]{@link https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout} method to schedule execution of listeners.
+         * While it is likely that order of execution will be preserved, it is not guaranteed.
+         * Therefore you SHOULD not rely on your listeners to be executed in order they are set.
+         *
+         * @param {Integer} timeout Timeout. Optional. Default is 0.
+         * @returns {this} Itself for chain.
+         */
+
+    }, {
+        key: "not_sync",
+        value: function not_sync(timeout) {
+            var _this2 = this;
+
+            this._invoke_listener = function (listener, args) {
+                return setTimeout(function () {
+                    return listener.apply(_this2, args);
+                }, timeout || 0);
+            };
+            return this;
+        }
+
+        /**
+         * Validator of listener. Throws if invalid.
+         * @private
+         * @param {Function} listener Event listener to invoke.
+         * @returns {void}
+         */
+
+    }, {
         key: "_throw_on_invalid_listener",
         value: function _throw_on_invalid_listener(listener) {
             if (typeof listener !== "function") throw new TypeError("listener must be a function!");
@@ -92,12 +161,33 @@ var Jiken = function () {
                     idx -= 1;
                 }
 
-                listener.apply(this, args);
+                this._invoke_listener(listener, args);
             }
 
             if (event.length === 0) delete this._events[name];
 
             return true;
+        }
+
+        /**
+         * Invokes event.
+         *
+         * The same as [emit]{@link Jiken#emit}, but returns self for chain.
+         *
+         * @param {Any} name Event name.
+         * @param {Any} args Arguments for listener.
+         * @returns {this} Itself for chain.
+         */
+
+    }, {
+        key: "trigger",
+        value: function trigger(name) {
+            for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+                args[_key2 - 1] = arguments[_key2];
+            }
+
+            this.emit.apply(this, [name].concat(args));
+            return this;
         }
 
         /**
@@ -252,7 +342,7 @@ var Jiken = function () {
         /**
          * Removes particular listener for the event.
          *
-         * @note It removes at most one listener.
+         * It removes at most one listener.
          *
          * @param {Any} name Event name.
          * @param {Function} listener Event listener to invoke.

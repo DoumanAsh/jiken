@@ -3,11 +3,42 @@
 # Jiken
 Browser EventEmitter
 
+Mimics API of node.js [EventEmitter](https://nodejs.org/api/events.html)
+And gives you some extra features.
+
+## Usage
+
+### Extend class:
+```
+   const Jiken = require('jiken').Jiken;
+   class MySuperEmitter extends Jiken {
+       constructor() {
+           super()
+           this.on('some-event', () => console.log('trigger some-event'));
+       }
+   }
+
+   const emitter = new MySuperEmitter();
+   emitter.emit('some-event');
+```
+
+### Use instance:
+```
+   const Jiken = require('jiken').Jiken;
+
+   const test = new Jiken();
+
+   test.on('lolka', () => console.log('lol'));
+```
+
 **Kind**: global class  
 
 * [Jiken](#Jiken)
     * [new Jiken()](#new_Jiken_new)
+    * [.sync()](#Jiken+sync) ⇒ <code>this</code>
+    * [.not_sync(timeout)](#Jiken+not_sync) ⇒ <code>this</code>
     * [.emit(name, ...args)](#Jiken+emit) ⇒ <code>Boolean</code>
+    * [.trigger(name, ...args)](#Jiken+trigger) ⇒ <code>this</code>
     * [.eventNames()](#Jiken+eventNames) ⇒ <code>Array</code>
     * [.listenerCount(name)](#Jiken+listenerCount) ⇒ <code>Integer</code>
     * [.listeners(name)](#Jiken+listeners) ⇒ <code>Array</code>
@@ -23,6 +54,29 @@ Browser EventEmitter
 ## new Jiken()
 Creates new instance.
 
+<a name="Jiken+sync"></a>
+
+## jiken.sync() ⇒ <code>this</code>
+Sets synchronous execution for listeners.
+
+**Kind**: instance method of [<code>Jiken</code>](#Jiken)  
+**Returns**: <code>this</code> - Itself for chain.  
+<a name="Jiken+not_sync"></a>
+
+## jiken.not_sync(timeout) ⇒ <code>this</code>
+Sets asynchronous execution for listeners.
+
+Under hood it uses [setTimeout](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout) method to schedule execution of listeners.
+While it is likely that order of execution will be preserved, it is not guaranteed.
+Therefore you SHOULD not rely on your listeners to be executed in order they are set.
+
+**Kind**: instance method of [<code>Jiken</code>](#Jiken)  
+**Returns**: <code>this</code> - Itself for chain.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| timeout | <code>Integer</code> | Timeout. Optional. Default is 0. |
+
 <a name="Jiken+emit"></a>
 
 ## jiken.emit(name, ...args) ⇒ <code>Boolean</code>
@@ -30,6 +84,21 @@ Invokes event.
 
 **Kind**: instance method of [<code>Jiken</code>](#Jiken)  
 **Returns**: <code>Boolean</code> - True if there are any listeners. False otherwise.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>Any</code> | Event name. |
+| ...args | <code>Any</code> | Arguments for listener. |
+
+<a name="Jiken+trigger"></a>
+
+## jiken.trigger(name, ...args) ⇒ <code>this</code>
+Invokes event.
+
+The same as [emit](#Jiken+emit), but returns self for chain.
+
+**Kind**: instance method of [<code>Jiken</code>](#Jiken)  
+**Returns**: <code>this</code> - Itself for chain.  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -139,9 +208,10 @@ Removes all listeners for all events or particular one..
 ## jiken.removeListener(name, listener) ⇒ <code>this</code>
 Removes particular listener for the event.
 
+It removes at most one listener.
+
 **Kind**: instance method of [<code>Jiken</code>](#Jiken)  
 **Returns**: <code>this</code> - Itself for chain.  
-**Note**: It removes at most one listener.  
 
 | Param | Type | Description |
 | --- | --- | --- |

@@ -126,7 +126,7 @@ test('Jiken add events', async t => {
     jiken.removeListener(event2.name, event2.listener);
 });
 
-test('Jiken fire event', t => {
+test.cb('Jiken fire event async', t => {
     const jiken = new Jiken();
     const args = [1, 2, 3];
     const event = {
@@ -135,6 +135,110 @@ test('Jiken fire event', t => {
             t.is(arg1, args[0]);
             t.is(arg2, args[1]);
             t.pass();
+            t.end();
+        }
+    };
+
+    jiken.not_sync(1);
+    jiken.on(event.name, event.listener);
+
+    t.true(jiken.emit(event.name, args[0], args[1], args[2]));
+    t.true(event.name in jiken._events);
+    t.is(jiken._events[event.name].length, 1);
+    t.is(jiken.listenerCount(event.name), 1);
+    t.is(jiken._events[event.name][0], event.listener);
+    t.deepEqual(jiken.eventNames(), [event.name]);
+
+});
+
+test.cb('Jiken fire events async reverse order', t => {
+    let first_called = false;
+    const jiken = new Jiken();
+    const event1 = {
+        name: "waifu1",
+        listener: function() {
+            first_called = true;
+            t.pass();
+            t.end();
+        }
+    };
+    const event2 = {
+        name: "waifu2",
+        listener: function() {
+            t.false(first_called);
+            t.pass();
+        }
+    };
+
+    jiken.on(event1.name, event1.listener)
+         .on(event2.name, event2.listener)
+         .not_sync(5)
+         .trigger(event1.name)
+         .not_sync(2)
+         .trigger(event2.name);
+
+});
+
+test.cb('Jiken fire events async order', t => {
+    let first_called = false;
+    const jiken = new Jiken();
+    const event1 = {
+        name: "waifu1",
+        listener: function() {
+            first_called = true;
+            t.pass();
+        }
+    };
+    const event2 = {
+        name: "waifu2",
+        listener: function() {
+            t.true(first_called);
+            t.pass();
+            t.end();
+        }
+    };
+
+    jiken.on(event1.name, event1.listener)
+         .on(event2.name, event2.listener)
+         .not_sync(1)
+         .trigger(event1.name)
+         .not_sync(2)
+         .trigger(event2.name);
+});
+
+test.cb('Jiken trigger event sync', t => {
+    const jiken = new Jiken();
+    const args = [1, 2, 3];
+    const event = {
+        name: "waifu",
+        listener: function(arg1, arg2) {
+            t.is(arg1, args[0]);
+            t.is(arg2, args[1]);
+            t.pass();
+            t.end();
+        }
+    };
+
+    jiken.on(event.name, event.listener);
+
+    jiken.trigger(event.name, args[0], args[1], args[2]);
+    t.true(event.name in jiken._events);
+    t.is(jiken._events[event.name].length, 1);
+    t.is(jiken.listenerCount(event.name), 1);
+    t.is(jiken._events[event.name][0], event.listener);
+    t.deepEqual(jiken.eventNames(), [event.name]);
+});
+
+test.cb('Jiken fire event sync', t => {
+    const jiken = new Jiken();
+    const args = [1, 2, 3];
+    const event = {
+        name: "waifu",
+        listener: function(arg1, arg2) {
+            t.is(arg1, args[0]);
+            t.is(arg2, args[1]);
+            t.pass();
+            t.end();
         }
     };
 
@@ -148,7 +252,7 @@ test('Jiken fire event', t => {
     t.deepEqual(jiken.eventNames(), [event.name]);
 });
 
-test('Jiken fire event once', t => {
+test.cb('Jiken fire event once async', t => {
     const jiken = new Jiken();
     const args = [1, 2, 3];
     const event = {
@@ -157,12 +261,58 @@ test('Jiken fire event once', t => {
             t.is(arg1, args[0]);
             t.is(arg2, args[1]);
             t.pass();
+            t.end();
+        }
+    };
+
+    jiken.not_sync();
+    jiken.once(event.name, event.listener);
+
+    t.true(jiken.emit(event.name, args[0], args[1], args[2]));
+    t.false(event.name in jiken._events);
+    t.deepEqual(jiken.eventNames(), []);
+    t.is(jiken.listenerCount(event.name), 0);
+    t.false(jiken.emit(event.name, args[0], args[1], args[2]));
+});
+
+test.cb('Jiken fire event once sync', t => {
+    const jiken = new Jiken();
+    const args = [1, 2, 3];
+    const event = {
+        name: "waifu",
+        listener: function(arg1, arg2) {
+            t.is(arg1, args[0]);
+            t.is(arg2, args[1]);
+            t.pass();
+            t.end();
         }
     };
 
     jiken.once(event.name, event.listener);
 
     t.true(jiken.emit(event.name, args[0], args[1], args[2]));
+    t.false(event.name in jiken._events);
+    t.deepEqual(jiken.eventNames(), []);
+    t.is(jiken.listenerCount(event.name), 0);
+    t.false(jiken.emit(event.name, args[0], args[1], args[2]));
+});
+
+test.cb('Jiken trigger event once sync', t => {
+    const jiken = new Jiken();
+    const args = [1, 2, 3];
+    const event = {
+        name: "waifu",
+        listener: function(arg1, arg2) {
+            t.is(arg1, args[0]);
+            t.is(arg2, args[1]);
+            t.pass();
+            t.end();
+        }
+    };
+
+    jiken.once(event.name, event.listener);
+
+    jiken.trigger(event.name, args[0], args[1], args[2]);
     t.false(event.name in jiken._events);
     t.deepEqual(jiken.eventNames(), []);
     t.is(jiken.listenerCount(event.name), 0);

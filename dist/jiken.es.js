@@ -1,5 +1,33 @@
 /**
  * Browser EventEmitter
+ *
+ * Mimics API of node.js [EventEmitter]{@link https://nodejs.org/api/events.html}
+ * And gives you some extra features.
+ *
+ * ## Usage
+ *
+ * ### Extend class:
+ * ```
+   const Jiken = require('jiken').Jiken;
+   class MySuperEmitter extends Jiken {
+       constructor() {
+           super()
+           this.on('some-event', () => console.log('trigger some-event'));
+       }
+   }
+
+   const emitter = new MySuperEmitter();
+   emitter.emit('some-event');
+ * ```
+ *
+ * ### Use instance:
+ * ```
+   const Jiken = require('jiken').Jiken;
+
+   const test = new Jiken();
+
+   test.on('lolka', () => console.log('lol'));
+ * ```
  */
 class Jiken {
     /**
@@ -9,6 +37,31 @@ class Jiken {
         this._events = {};
 
         this.addListener = this.on;
+        this.sync();
+    }
+
+    /**
+     * Sets synchronous execution for listeners.
+     * @returns {this} Itself for chain.
+     */
+    sync() {
+        this._invoke_listener = (listener, args) => listener.apply(this, args);
+        return this;
+    }
+
+    /**
+     * Sets asynchronous execution for listeners.
+     *
+     * Under hood it uses [setTimeout]{@link https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout} method to schedule execution of listeners.
+     * While it is likely that order of execution will be preserved, it is not guaranteed.
+     * Therefore you SHOULD not rely on your listeners to be executed in order they are set.
+     *
+     * @param {Integer} timeout Timeout. Optional. Default is 0.
+     * @returns {this} Itself for chain.
+     */
+    not_sync(timeout) {
+        this._invoke_listener = (listener, args) => setTimeout(() => listener.apply(this, args), timeout || 0);
+        return this;
     }
 
     /**
@@ -53,12 +106,26 @@ class Jiken {
                 idx -= 1;
             }
 
-            listener.apply(this, args);
+            this._invoke_listener(listener, args);
         }
 
         if (event.length === 0) delete this._events[name];
 
         return true;
+    }
+
+    /**
+     * Invokes event.
+     *
+     * The same as [emit]{@link Jiken#emit}, but returns self for chain.
+     *
+     * @param {Any} name Event name.
+     * @param {Any} args Arguments for listener.
+     * @returns {this} Itself for chain.
+     */
+    trigger(name, ...args) {
+        this.emit(name, ...args);
+        return this;
     }
 
     /**
@@ -189,7 +256,7 @@ class Jiken {
     /**
      * Removes particular listener for the event.
      *
-     * @note It removes at most one listener.
+     * It removes at most one listener.
      *
      * @param {Any} name Event name.
      * @param {Function} listener Event listener to invoke.
