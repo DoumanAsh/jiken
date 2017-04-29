@@ -35,6 +35,7 @@ And gives you some extra features.
 
 * [Jiken](#Jiken)
     * [new Jiken()](#new_Jiken_new)
+    * [.addListener(name, listener)](#Jiken+addListener) ⇒ <code>this</code>
     * [.sync()](#Jiken+sync) ⇒ <code>this</code>
     * [.not_sync(timeout)](#Jiken+not_sync) ⇒ <code>this</code>
     * [.emit(name, ...args)](#Jiken+emit) ⇒ <code>Boolean</code>
@@ -53,6 +54,19 @@ And gives you some extra features.
 
 ## new Jiken()
 Creates new instance.
+
+<a name="Jiken+addListener"></a>
+
+## jiken.addListener(name, listener) ⇒ <code>this</code>
+Alias to [on](#Jiken+on).
+
+**Kind**: instance method of [<code>Jiken</code>](#Jiken)  
+**Returns**: <code>this</code> - Itself for chain.  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| name | <code>Any</code> | Event name. |
+| listener | <code>function</code> | Event listener to invoke. |
 
 <a name="Jiken+sync"></a>
 

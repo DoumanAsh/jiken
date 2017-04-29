@@ -32,7 +32,7 @@
     "test": "ava",
     "coverage": "node ./node_modules/nyc/bin/nyc.js node  ./node_modules/ava/cli.js",
 
-    "docs": "jsdoc -c jsdoc.json",
+    "docs": "jsdoc -c jsdoc.json --pedantic",
     "docs:md": "node ./ci/gen_md_docs.js"
   },
   "keywords": [

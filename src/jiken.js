@@ -38,6 +38,17 @@ class Jiken {
     constructor() {
         this._events = {};
 
+        /**
+         * Alias to [on]{@link Jiken#on}.
+         *
+         * @memberof Jiken#
+         * @method addListener
+         *
+         * @param {Any} name Event name.
+         * @param {Function} listener Event listener to invoke.
+         *
+         * @returns {this} Itself for chain.
+         */
         this.addListener = this.on;
         this.sync();
     }
