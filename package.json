@@ -16,9 +16,17 @@
   "scripts": {
     "lint": "eslint src/ test/",
 
-    "build": "rollup -c",
+    "build:es": "rollup -c rollup.config.es.js",
     "build:min": "rollup -c rollup.config.min.js",
+
+    "prebuild": "npm run build:es",
+    "build": "rollup -c",
+
+    "prebuild:all": "npm run build:min",
+    "build:all": "npm run build",
+
     "build:watch": "rollup -c -w",
+
     "prepublishOnly": "npm run build",
 
     "test": "ava",

@@ -24,6 +24,5 @@ export default {
     targets: [
         { dest: 'dist/jiken.cjs.js', format: 'cjs' },
         { dest: 'dist/jiken.js', format: 'umd' },
-        { dest: 'dist/jiken.es.js', format: 'es' },
     ]
 };
